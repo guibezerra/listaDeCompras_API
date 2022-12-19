@@ -22,7 +22,7 @@
  * spring.datasource.password=[password]
  * spring.jpa.show-sql=true
  
-  Após isso, instale as dependências do projeto e rode a aplicação, o banco listaDeComprasDB irá ser criado automáticamente. A API possuí dois endpoints o primeiro deles refere-se as listas de compras que o usário pode criar e manipular. Para verificar seu funcionamento deve-se utilizar um API Client como o Postman, onde os path's das requisições do tipo GET apresentadas abaixo irão retornar todas as listas salvas no banco e uma única lista, respectivamente.
+  Após isso, instale as dependências do projeto e rode a aplicação, o banco listaDeComprasDB irá ser criado automáticamente. A API possuí dois endpoints o primeiro deles refere-se as listas de compras que o usário pode criar e manipular. Para verificar seu funcionamento deve-se utilizar um API Client, onde os path's das requisições do tipo GET apresentadas abaixo irão retornar todas as listas salvas no banco e uma única lista, respectivamente.
  ```
  http://localhost:8080/listas
  http://localhost:8080/listas/{idListaDeCompras}
@@ -58,6 +58,11 @@ Por fim, as requisções do tipo DELETE devem ter especificadas em seu path o id
     }
   ```
   Por fim, as requisções do tipo DELETE devem ter especificadas em seu path o id do produto que deve ser excluído, caso o usuário deseje.
+  
+  Caso a API Client escolhida para uso seja o Postman, o link abaixo possui a collection com todas as requisições feitas para facilitar o teste da API. Para utiliza-la, basta importar o arquivo baixado no postman e utiliza-las como base pare realizar os testes dos enpoints.
+```
+https://drive.google.com/file/d/1egw0zB1uJabZhpqRCynRgAJtmLNTgxeY/view?usp=share_link 
+```
   
   
   
