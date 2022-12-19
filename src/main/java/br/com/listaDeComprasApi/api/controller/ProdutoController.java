@@ -79,7 +79,7 @@ public class ProdutoController {
             return produtoModelAssembler.toModel(produtoAtual);
 
         } catch (EntidadeNaoEncontradaException e) {
-            throw new NegocioException(e.getMessage());
+            throw new NegocioException(e.getMessage(), e);
         }
     }
 
