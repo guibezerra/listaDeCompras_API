@@ -11,5 +11,5 @@ public class ProdutoModel {
 
     private int quantidade;
 
-    private ListaDeCompras listaDeCompras;
+    private ListaDeComprasModel listaDeCompras;
 }

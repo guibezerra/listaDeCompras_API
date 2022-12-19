@@ -62,7 +62,7 @@ public class ListaDeComprasController {
     }
 
     @PutMapping("/{idListaDeCompras}")
-    public ListaDeComprasModel atualizarLista(@PathVariable Long idListaDeCompras,  @Valid @RequestBody ListaDeComprasInput listaDeComprasInput) throws Exception {
+    public ListaDeComprasModel atualizarLista(@PathVariable Long idListaDeCompras,  @Valid @RequestBody ListaDeComprasInput listaDeComprasInput) {
         try {
             ListaDeCompras listaDeComprasAtual = listaDeComprasService.buscarPorId(idListaDeCompras);
 

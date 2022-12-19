@@ -25,9 +25,9 @@ public class ListaDeComprasService {
     @Autowired
     ProdutoRepository produtoRepository;
 
-    private static final String MSG_LISTA_NAO_ENCOTRADA = "Não existe registro de lista com o id informado";
+    private static final String MSG_LISTA_NAO_ENCOTRADA = "Não existe registro de lista com o id informado.";
 
-    private static final String MSG_LISTA_COM_MESMO_NOME = "Já existe lista com o nome informado";
+    private static final String MSG_LISTA_COM_MESMO_NOME = "Já existe lista com o nome informado.";
 
     @Transactional
     public ListaDeCompras buscarPorId (Long idListaDeCompras) {
@@ -41,13 +41,26 @@ public class ListaDeComprasService {
 
     @Transactional
     public ListaDeCompras salvar (ListaDeCompras listaDeCompras){
-        try {
-            verificarSeExisteListaComMesmoNome(listaDeCompras);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        verificarSeExisteListaComMesmoNome(listaDeCompras);
 
         return listaDeComprasRepository.save(listaDeCompras);
+    }
+
+    @Transactional
+    public void remover(Long idListaDeCompras) {
+        try {
+            List<Produto> produtoList = produtoRepository.findAllProdutosByIdListaDeCompras(idListaDeCompras);
+
+            produtoRepository.deleteAll(produtoList);
+            produtoRepository.flush();
+
+            listaDeComprasRepository.deleteById(idListaDeCompras);
+            listaDeComprasRepository.flush();
+
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntidadeNaoEncontradaException(MSG_LISTA_NAO_ENCOTRADA);
+
+        }
     }
 
     private void verificarSeExisteListaComMesmoNome(ListaDeCompras listaDeCompras) {
@@ -66,20 +79,4 @@ public class ListaDeComprasService {
 
     }
 
-    @Transactional
-    public void remover(Long idListaDeCompras) {
-        try {
-            List<Produto> produtoList = produtoRepository.findProdutoByIdListaDeCompras(idListaDeCompras);
-
-            produtoRepository.deleteAll(produtoList);
-            produtoRepository.flush();
-
-            listaDeComprasRepository.deleteById(idListaDeCompras);
-            listaDeComprasRepository.flush();
-
-        } catch (EmptyResultDataAccessException e) {
-            throw new EntidadeNaoEncontradaException(MSG_LISTA_NAO_ENCOTRADA);
-
-        }
-    }
 }

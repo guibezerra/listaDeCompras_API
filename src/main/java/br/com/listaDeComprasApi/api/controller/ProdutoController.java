@@ -4,6 +4,10 @@ import br.com.listaDeComprasApi.api.assembler.ProdutoInputDisassembler;
 import br.com.listaDeComprasApi.api.assembler.ProdutoModelAssembler;
 import br.com.listaDeComprasApi.api.model.ListaDeComprasModel;
 import br.com.listaDeComprasApi.api.model.ProdutoModel;
+import br.com.listaDeComprasApi.api.model.input.ListaDeComprasInput;
+import br.com.listaDeComprasApi.api.model.input.ProdutoInput;
+import br.com.listaDeComprasApi.domain.exception.EntidadeNaoEncontradaException;
+import br.com.listaDeComprasApi.domain.exception.NegocioException;
 import br.com.listaDeComprasApi.domain.model.ListaDeCompras;
 import br.com.listaDeComprasApi.domain.model.Produto;
 import br.com.listaDeComprasApi.domain.repository.ProdutoRepository;
@@ -13,10 +17,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value="/produtos")
@@ -39,16 +43,48 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public Page<ListaDeComprasModel> buscarTodasAsListasDeCompras (@PageableDefault(size = 10) Pageable pageable ) {
-        Page<ListaDeCompras> listaDeComprasPage = listaDeComprasService.buscarTodasListasDeCompras(pageable);
+    public Page<ProdutoModel> buscarProdutos (Long idListaDeCompras, @PageableDefault(size = 10) Pageable pageable ) {
+        Page<Produto> produtosPage = produtoService.buscarProdutos(pageable, idListaDeCompras);
 
-        Page<ListaDeComprasModel> listaDeComprasModelsPage = new PageImpl<>(
-                listaDeComprasModelAssembler.toCollectionModel(listaDeComprasPage.getContent()),
+        Page<ProdutoModel> produtosModelsPage = new PageImpl<>(
+                produtoModelAssembler.toCollectionModel(produtosPage.getContent()),
                 pageable,
-                listaDeComprasPage.getTotalElements()
+                produtosPage.getTotalElements()
         );
 
-        return listaDeComprasModelsPage;
+        return produtosModelsPage;
     }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProdutoModel salvarProduto(@Valid @RequestBody ProdutoInput produtoInput) {
+        Produto produto = produtoInputDisassembler.toDomainObject(produtoInput);
+
+        produto = produtoService.salvar(produto);
+
+        return produtoModelAssembler.toModel(produto);
+    }
+
+    @PutMapping("/{idProduto}")
+    public ProdutoModel atualizarProduto(@PathVariable Long idProduto, @Valid @RequestBody ProdutoInput produtoInput) {
+        try {
+            Produto produtoAtual = produtoService.buscarPorId(idProduto);
+
+            produtoInputDisassembler.copyToDomainObject(produtoInput, produtoAtual);
+
+            produtoAtual.setIdProduto(idProduto);
+
+            produtoAtual = produtoService.salvar(produtoAtual);
+
+            return produtoModelAssembler.toModel(produtoAtual);
+
+        } catch (EntidadeNaoEncontradaException e) {
+            throw new NegocioException(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{idProduto}")
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public void removerListaDeCompras(@PathVariable Long idProduto){produtoService.remover(idProduto);}
 
 }
