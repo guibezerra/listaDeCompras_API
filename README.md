@@ -4,6 +4,7 @@
  * Spring Boot
  * Spring Data JPA
  * Flyway
+ * Lombok
  * Banco de dados Mysql
  * Maven
  
