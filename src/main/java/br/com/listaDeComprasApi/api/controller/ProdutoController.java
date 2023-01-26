@@ -2,15 +2,11 @@ package br.com.listaDeComprasApi.api.controller;
 
 import br.com.listaDeComprasApi.api.assembler.ProdutoInputDisassembler;
 import br.com.listaDeComprasApi.api.assembler.ProdutoModelAssembler;
-import br.com.listaDeComprasApi.api.model.ListaDeComprasModel;
 import br.com.listaDeComprasApi.api.model.ProdutoModel;
-import br.com.listaDeComprasApi.api.model.input.ListaDeComprasInput;
 import br.com.listaDeComprasApi.api.model.input.ProdutoInput;
 import br.com.listaDeComprasApi.domain.exception.EntidadeNaoEncontradaException;
 import br.com.listaDeComprasApi.domain.exception.NegocioException;
-import br.com.listaDeComprasApi.domain.model.ListaDeCompras;
 import br.com.listaDeComprasApi.domain.model.Produto;
-import br.com.listaDeComprasApi.domain.repository.ProdutoRepository;
 import br.com.listaDeComprasApi.domain.service.ProdutoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -46,13 +42,15 @@ public class ProdutoController {
     public Page<ProdutoModel> buscarProdutos (Long idListaDeCompras, @PageableDefault(size = 10) Pageable pageable ) {
         Page<Produto> produtosPage = produtoService.buscarProdutos(pageable, idListaDeCompras);
 
-        Page<ProdutoModel> produtosModelsPage = new PageImpl<>(
+        return listaDeProdutosPaginada(pageable, produtosPage);
+    }
+
+    private Page<ProdutoModel> listaDeProdutosPaginada (Pageable pageable, Page produtosPage) {
+        return new PageImpl<>(
                 produtoModelAssembler.toCollectionModel(produtosPage.getContent()),
                 pageable,
                 produtosPage.getTotalElements()
         );
-
-        return produtosModelsPage;
     }
 
     @PostMapping

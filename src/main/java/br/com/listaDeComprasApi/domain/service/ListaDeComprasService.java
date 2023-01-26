@@ -7,7 +7,6 @@ import br.com.listaDeComprasApi.domain.model.Produto;
 import br.com.listaDeComprasApi.domain.repository.ListaDeComprasRepository;
 import br.com.listaDeComprasApi.domain.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,27 +45,10 @@ public class ListaDeComprasService {
         return listaDeComprasRepository.save(listaDeCompras);
     }
 
-    @Transactional
-    public void remover(Long idListaDeCompras) {
-        try {
-            List<Produto> produtoList = produtoRepository.findAllProdutosByIdListaDeCompras(idListaDeCompras);
-
-            produtoRepository.deleteAll(produtoList);
-            produtoRepository.flush();
-
-            listaDeComprasRepository.deleteById(idListaDeCompras);
-            listaDeComprasRepository.flush();
-
-        } catch (EmptyResultDataAccessException e) {
-            throw new EntidadeNaoEncontradaException(MSG_LISTA_NAO_ENCOTRADA);
-
-        }
-    }
-
     private void verificarSeExisteListaComMesmoNome(ListaDeCompras listaDeCompras) {
         ListaDeCompras resultadoBusca;
 
-        if (!Objects.isNull(listaDeCompras.getIdListaDeCompras())){
+        if (isIdNaoNulo(listaDeCompras)){
             resultadoBusca = listaDeComprasRepository.findByNameAndId(listaDeCompras.getNome(), listaDeCompras.getIdListaDeCompras());
 
         } else {
@@ -78,5 +60,37 @@ public class ListaDeComprasService {
         }
 
     }
+
+    private boolean isIdNaoNulo(ListaDeCompras listaDeCompras) {
+        return !Objects.isNull(listaDeCompras.getIdListaDeCompras());
+    }
+
+    @Transactional
+    public void remover(Long idListaDeCompras) {
+        try {
+            List<Produto> produtoList = produtoRepository.findAllProdutosByIdListaDeCompras(idListaDeCompras);
+
+            removerProdutosDalistaDeCompras(produtoList);
+            removerListaDeCompras(idListaDeCompras);
+
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntidadeNaoEncontradaException(MSG_LISTA_NAO_ENCOTRADA);
+
+        }
+    }
+
+    private void removerProdutosDalistaDeCompras (List<Produto> produtoList) {
+        produtoRepository.deleteAll(produtoList);
+        produtoRepository.flush();
+
+    }
+
+    private void removerListaDeCompras (Long idListaDeCompras){
+        listaDeComprasRepository.deleteById(idListaDeCompras);
+        listaDeComprasRepository.flush();
+
+    }
+
+
 
 }

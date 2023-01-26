@@ -42,13 +42,15 @@ public class ListaDeComprasController {
     public Page<ListaDeComprasModel> buscarTodasAsListasDeCompras (@PageableDefault(size = 10) Pageable pageable ) {
         Page<ListaDeCompras> listaDeComprasPage = listaDeComprasService.buscarTodasListasDeCompras(pageable);
 
-        Page<ListaDeComprasModel> listaDeComprasModelsPage = new PageImpl<>(
+        return listaDeComprasPaginada(pageable, listaDeComprasPage);
+    }
+
+    private  Page<ListaDeComprasModel> listaDeComprasPaginada (Pageable pageable, Page<ListaDeCompras> listaDeComprasPage) {
+        return new PageImpl<>(
                 listaDeComprasModelAssembler.toCollectionModel(listaDeComprasPage.getContent()),
                 pageable,
                 listaDeComprasPage.getTotalElements()
         );
-
-        return listaDeComprasModelsPage;
     }
 
     @PostMapping

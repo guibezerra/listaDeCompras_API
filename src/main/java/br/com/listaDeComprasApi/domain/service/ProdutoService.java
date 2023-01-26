@@ -4,7 +4,6 @@ import br.com.listaDeComprasApi.domain.exception.EntidadeNaoEncontradaException;
 import br.com.listaDeComprasApi.domain.exception.NegocioException;
 import br.com.listaDeComprasApi.domain.model.ListaDeCompras;
 import br.com.listaDeComprasApi.domain.model.Produto;
-import br.com.listaDeComprasApi.domain.repository.ListaDeComprasRepository;
 import br.com.listaDeComprasApi.domain.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -13,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -42,19 +40,23 @@ public class ProdutoService {
 
     @Transactional
     public Produto salvar (Produto produto){
-        ListaDeCompras listaDeCompras = listaDeComprasService.buscarPorId(produto.getListaDeCompras().getIdListaDeCompras());
-
-        produto.setListaDeCompras(listaDeCompras);
-
+        buscaEAssociaListaDeComprasAProduto(produto);
         verificarSeExisteProdutoComMesmoNome(produto);
 
         return produtoRepository.save(produto);
     }
 
+    private void buscaEAssociaListaDeComprasAProduto (Produto produto) {
+        ListaDeCompras listaDeCompras = listaDeComprasService.buscarPorId(produto.getListaDeCompras().getIdListaDeCompras());
+
+        produto.setListaDeCompras(listaDeCompras);
+
+    }
+
     private void verificarSeExisteProdutoComMesmoNome(Produto produto) {
         Produto resultadoBusca;
 
-        if (!Objects.isNull(produto.getIdProduto())){
+        if (isIdNaoNulo(produto)){
             resultadoBusca = produtoRepository.findByNameAndIdProdutoAndIdLista(produto.getNome(), produto.getListaDeCompras().getIdListaDeCompras(), produto.getIdProduto());
 
         } else {
@@ -66,6 +68,11 @@ public class ProdutoService {
             throw new NegocioException(MSG_PRODUTO_COM_MESMO_NOME);
 
         }
+    }
+
+    private boolean isIdNaoNulo(Produto produto){
+        return !Objects.isNull(produto.getIdProduto());
+
     }
 
     @Transactional
