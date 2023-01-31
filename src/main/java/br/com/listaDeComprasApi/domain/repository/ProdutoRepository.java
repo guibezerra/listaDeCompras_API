@@ -20,8 +20,8 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     Page<Produto> findAllProdutosByIdListaDeCompras(Pageable pageable, @Param("idListaDeCompras") Long idListaDeCompras);
 
     @Query("from Produto p where p.nome like :nome and p.listaDeCompras.idListaDeCompras = :idListaDeCompras and p.idProduto <> :idProduto")
-    Produto findByNameAndIdProdutoAndIdLista(@Param("nome") String nome, @Param("idListaDeCompras") Long idListaDeCompras, @Param("idProduto") Long idProduto);
+    Boolean findByNameAndIdProdutoAndIdLista(@Param("nome") String nome, @Param("idListaDeCompras") Long idListaDeCompras, @Param("idProduto") Long idProduto);
 
     @Query("from Produto p where p.nome like :nome and p.listaDeCompras.idListaDeCompras = :idListaDeCompras")
-    Produto findByNameAndIdLista(@Param("nome")String nome, @Param("idListaDeCompras") Long idListaDeCompras);
+    Boolean findByNameAndIdLista(@Param("nome")String nome, @Param("idListaDeCompras") Long idListaDeCompras);
 }

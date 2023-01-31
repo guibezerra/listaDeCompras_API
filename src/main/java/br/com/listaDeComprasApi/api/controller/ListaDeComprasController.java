@@ -4,8 +4,6 @@ import br.com.listaDeComprasApi.api.assembler.ListaDeComprasInputDisassembler;
 import br.com.listaDeComprasApi.api.assembler.ListaDeComprasModelAssembler;
 import br.com.listaDeComprasApi.api.model.ListaDeComprasModel;
 import br.com.listaDeComprasApi.api.model.input.ListaDeComprasInput;
-import br.com.listaDeComprasApi.domain.exception.EntidadeNaoEncontradaException;
-import br.com.listaDeComprasApi.domain.exception.NegocioException;
 import br.com.listaDeComprasApi.domain.model.ListaDeCompras;
 import br.com.listaDeComprasApi.domain.service.ListaDeComprasService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +12,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.sql.SQLException;
 
 @RestController
 @RequestMapping(value="/listas")
@@ -32,10 +30,11 @@ public class ListaDeComprasController {
     ListaDeComprasInputDisassembler listaDeComprasInputDisassembler;
 
     @GetMapping("/{idListaDeCompras}")
-    public ListaDeComprasModel buscarPorId (@PathVariable Long idListaDeCompras) {
+    public ResponseEntity<ListaDeComprasModel> buscarPorId (@PathVariable Long idListaDeCompras) {
         ListaDeCompras listaDeCompras = listaDeComprasService.buscarPorId(idListaDeCompras);
+        ListaDeComprasModel listaDeComprasModel = listaDeComprasModelAssembler.toModel(listaDeCompras);
 
-        return listaDeComprasModelAssembler.toModel(listaDeCompras);
+        return ResponseEntity.ok(listaDeComprasModel);
     }
 
     @GetMapping
@@ -65,7 +64,6 @@ public class ListaDeComprasController {
 
     @PutMapping("/{idListaDeCompras}")
     public ListaDeComprasModel atualizarLista(@PathVariable Long idListaDeCompras,  @Valid @RequestBody ListaDeComprasInput listaDeComprasInput) {
-        try {
             ListaDeCompras listaDeComprasAtual = listaDeComprasService.buscarPorId(idListaDeCompras);
 
             listaDeComprasInputDisassembler.copyToDomainObject(listaDeComprasInput, listaDeComprasAtual);
@@ -75,13 +73,10 @@ public class ListaDeComprasController {
             listaDeComprasAtual = listaDeComprasService.salvar(listaDeComprasAtual);
 
             return listaDeComprasModelAssembler.toModel(listaDeComprasAtual);
-
-        } catch (EntidadeNaoEncontradaException e) {
-            throw new NegocioException(e.getMessage());
-        }
     }
 
     @DeleteMapping("/{idListaDeCompras}")
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void removerListaDeCompras(@PathVariable Long idListaDeCompras){listaDeComprasService.remover(idListaDeCompras);}
+    public ResponseEntity<Void> removerListaDeCompras(@PathVariable Long idListaDeCompras) {
+        return listaDeComprasService.remover(idListaDeCompras);
+    }
 }

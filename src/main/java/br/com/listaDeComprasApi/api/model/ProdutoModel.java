@@ -1,6 +1,5 @@
 package br.com.listaDeComprasApi.api.model;
 
-import br.com.listaDeComprasApi.domain.model.ListaDeCompras;
 import lombok.Data;
 
 @Data
