@@ -1,13 +1,10 @@
 package br.com.listaDeComprasApi.api.exceptionHandler;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.management.ConstructorParameters;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.List;
 
 @Getter

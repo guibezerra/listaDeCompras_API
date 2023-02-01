@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ProdutoRepository extends JpaRepository<Produto, Long> {
+public interface ProdutoRepository extends JpaRepository<Produto, Long>, CustomizedProdutoRepository {
 
     @Query("from Produto p where p.listaDeCompras.idListaDeCompras = :idListaDeCompras")
     List<Produto> findAllProdutosByIdListaDeCompras(@Param("idListaDeCompras") Long idListaDeCompras);
@@ -19,9 +19,9 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     @Query("from Produto p where p.listaDeCompras.idListaDeCompras = :idListaDeCompras")
     Page<Produto> findAllProdutosByIdListaDeCompras(Pageable pageable, @Param("idListaDeCompras") Long idListaDeCompras);
 
-    @Query("from Produto p where p.nome like :nome and p.listaDeCompras.idListaDeCompras = :idListaDeCompras and p.idProduto <> :idProduto")
-    Produto findByNameAndIdProdutoAndIdLista(@Param("nome") String nome, @Param("idListaDeCompras") Long idListaDeCompras, @Param("idProduto") Long idProduto);
-
-    @Query("from Produto p where p.nome like :nome and p.listaDeCompras.idListaDeCompras = :idListaDeCompras")
-    Produto findByNameAndIdLista(@Param("nome")String nome, @Param("idListaDeCompras") Long idListaDeCompras);
+//    @Query("select coalesce(count(p.idProduto),0) from Produto p where p.nome like :nome and p.listaDeCompras.idListaDeCompras = :idListaDeCompras and p.idProduto <> :idProduto group by p.idProduto")
+//    Boolean findByNameAndIdProdutoAndIdLista(@Param("nome") String nome, @Param("idListaDeCompras") Long idListaDeCompras, @Param("idProduto") Long idProduto);
+//
+//    @Query("select coalesce(count(p.idProduto),0)  from Produto p where p.nome like :nome and p.listaDeCompras.idListaDeCompras = :idListaDeCompras group by p.idProduto")
+//    Boolean findByNameAndIdLista(@Param("nome")String nome, @Param("idListaDeCompras") Long idListaDeCompras);
 }
