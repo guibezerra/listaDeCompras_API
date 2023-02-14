@@ -46,7 +46,7 @@ public class ListaDeComprasService {
     private void verificarSeExisteListaComMesmoNome(ListaDeCompras listaDeCompras) {
         ListaDeCompras resultadoBusca;
 
-        if (isIdNaoNulo(listaDeCompras)){
+        if (isIdListaDeComprasNaoNulo(listaDeCompras)){
             resultadoBusca = listaDeComprasRepository.findByNameAndId(listaDeCompras.getNome(), listaDeCompras.getIdListaDeCompras());
 
         } else {
@@ -59,7 +59,7 @@ public class ListaDeComprasService {
 
     }
 
-    private boolean isIdNaoNulo(ListaDeCompras listaDeCompras) {
+    private boolean isIdListaDeComprasNaoNulo(ListaDeCompras listaDeCompras) {
         return !Objects.isNull(listaDeCompras.getIdListaDeCompras());
     }
 

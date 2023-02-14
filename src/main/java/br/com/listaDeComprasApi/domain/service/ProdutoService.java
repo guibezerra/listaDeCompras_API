@@ -63,7 +63,7 @@ public class ProdutoService {
     private void verificarSeExisteProdutoComMesmoNome(Produto produto) {
         Boolean existeProdutoComMesmoNome;
 
-        if (isIdNaoNulo(produto)){
+        if (isIdProdutoNaoNulo(produto)){
             existeProdutoComMesmoNome = produtoRepository.findByNameAndIdProdutoAndIdLista(produto.getNome(), produto.getListaDeCompras().getIdListaDeCompras(), produto.getIdProduto());
 
         } else {
@@ -75,7 +75,7 @@ public class ProdutoService {
         }
     }
 
-    private boolean isIdNaoNulo(Produto produto){
+    private boolean isIdProdutoNaoNulo(Produto produto){
         return !Objects.isNull(produto.getIdProduto());
     }
 
