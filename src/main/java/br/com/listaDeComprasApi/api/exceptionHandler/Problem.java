@@ -14,14 +14,6 @@ public class Problem {
     private Integer status;
     private LocalDateTime timestamp;
     private String title;
-    private List<Field> validations;
+    private List<Field> fieldList;
 
-    @Getter
-    @AllArgsConstructor
-    public static class Field {
-
-        private String name;
-        private String userMessage;
-
-    }
 }
