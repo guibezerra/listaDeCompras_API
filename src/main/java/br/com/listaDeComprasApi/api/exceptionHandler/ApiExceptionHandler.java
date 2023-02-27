@@ -1,6 +1,9 @@
 package br.com.listaDeComprasApi.api.exceptionHandler;
 
 import br.com.listaDeComprasApi.domain.exception.EntidadeNaoEncontradaException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,26 +20,33 @@ import java.util.List;
 
 @ControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
+
+    @Autowired
+    private MessageSource messageSource;
+
+    private final String MSG_CAMPOS_INVALIDOS = "Um ou mais campos estão inválidos. Realize o preenchimento correto e tente novamente.";
+    private final String MSG_NOT_FOUND = "O recurso buscado não foi encontrado.";
+
     @ExceptionHandler(EntidadeNaoEncontradaException.class)
     public ResponseEntity<?> handleEntidadeNaoEncontradaException(
             EntidadeNaoEncontradaException ex, WebRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND;
-        List<Problem.Field> fild = new ArrayList<Problem.Field>();
+        List<Field> fild = new ArrayList<Field>();
 
-        Problem problem = new Problem(status.value(),LocalDateTime.now(), "Recurso Não Encontrado", fild);
+        Problem problem = new Problem(status.value(),LocalDateTime.now(),MSG_NOT_FOUND, fild);
 
         return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        List<Problem.Field> fild = new ArrayList<Problem.Field>();
+        List<Field> fild = new ArrayList<Field>();
 
         ex.getBindingResult().getAllErrors().stream().forEach(objectError ->
-                fild.add(new Problem.Field( ((FieldError) objectError).getField(),
-                                            objectError.getDefaultMessage())));
+                fild.add(new Field( ((FieldError) objectError).getField(),
+                        messageSource.getMessage(objectError, LocaleContextHolder.getLocale()))));
 
-        Problem problem = new Problem(status.value(),LocalDateTime.now(), "Um ou mais Campos Inválidos", fild);
+        Problem problem = new Problem(status.value(),LocalDateTime.now(), MSG_CAMPOS_INVALIDOS, fild);
 
         return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
     }
