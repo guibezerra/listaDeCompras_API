@@ -4,8 +4,6 @@ import br.com.listaDeComprasApi.api.assembler.ProdutoInputDisassembler;
 import br.com.listaDeComprasApi.api.assembler.ProdutoModelAssembler;
 import br.com.listaDeComprasApi.api.model.ProdutoModel;
 import br.com.listaDeComprasApi.api.model.input.ProdutoInput;
-import br.com.listaDeComprasApi.domain.exception.EntidadeNaoEncontradaException;
-import br.com.listaDeComprasApi.domain.exception.NegocioException;
 import br.com.listaDeComprasApi.domain.model.Produto;
 import br.com.listaDeComprasApi.domain.service.ProdutoService;
 import org.springframework.beans.factory.annotation.Autowired;
