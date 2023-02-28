@@ -1,6 +1,7 @@
 package br.com.listaDeComprasApi.api.exceptionHandler;
 
 import br.com.listaDeComprasApi.domain.exception.EntidadeNaoEncontradaException;
+import br.com.listaDeComprasApi.domain.exception.NegocioException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -25,15 +26,21 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     private MessageSource messageSource;
 
     private final String MSG_CAMPOS_INVALIDOS = "Um ou mais campos estão inválidos. Realize o preenchimento correto e tente novamente.";
-    private final String MSG_NOT_FOUND = "O recurso buscado não foi encontrado.";
+
+    @ExceptionHandler(NegocioException.class)
+    public ResponseEntity<?> handleNegocioException (NegocioException ex, WebRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        Problem problem = new Problem(status.value(), LocalDateTime.now(), ex.getMessage());
+
+        return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
+    }
 
     @ExceptionHandler(EntidadeNaoEncontradaException.class)
-    public ResponseEntity<?> handleEntidadeNaoEncontradaException(
-            EntidadeNaoEncontradaException ex, WebRequest request) {
+    public ResponseEntity<?> handleEntidadeNaoEncontradaException(EntidadeNaoEncontradaException ex, WebRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND;
-        List<Field> fild = new ArrayList<Field>();
 
-        Problem problem = new Problem(status.value(),LocalDateTime.now(),MSG_NOT_FOUND, fild);
+        Problem problem = new Problem(status.value(),LocalDateTime.now(),ex.getMessage());
 
         return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
     }
@@ -48,6 +55,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
         Problem problem = new Problem(status.value(),LocalDateTime.now(), MSG_CAMPOS_INVALIDOS, fild);
 
-        return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
+        return handleExceptionInternal(ex, problem, headers, status, request);
     }
 }
